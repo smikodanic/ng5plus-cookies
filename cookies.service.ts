@@ -206,15 +206,14 @@ export class CookiesService {
     // extract cookie value for specific name
     const cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
     let elemArr, elemName, elemVal, cookieVal;
+
     cookiesArr.forEach(function(elem: string) {
+      elem = elem.trim();
       elemArr = elem.split('='); // ["authAPIInit1", "jedan1"]
-      elemName = elemArr[0].trim();
-      elemVal = elemArr[1].trim();
       if (elemName === name) {
         cookieVal = elemVal;
       }
     });
-
 
     if (debug) {
       console.log('cookie-get()-cookiesArr: ', cookiesArr);
@@ -242,7 +241,7 @@ export class CookiesService {
     }
 
     let cookieVal = this.get(name, debug); // %7B%22jen%22%3A1%2C%22dva%22%3A%22dvica%22%7D
-
+  
     // convert cookie string value to object
     try {
       cookieVal = JSON.parse(decodeURIComponent(cookieVal));
@@ -305,8 +304,8 @@ export class CookiesService {
     const cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
     let elemArr, elemName;
     cookiesArr.forEach(function(elem: string) {
+      elem = elem.trim();
       elemArr = elem.split('='); // ["authAPIInit1", "jedan1"]
-      elemName = elemArr[0].trim();
       document.cookie = elemName + '=;expires=' + dateOld;
     });
 
@@ -362,8 +361,8 @@ export class CookiesService {
     const cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
     let elemArr, elemName, cookieExists = false;
     cookiesArr.forEach(function(elem: string) {
+      elem = elem.trim();
       elemArr = elem.split('='); // ["authAPIInit1", "jedan1"]
-      elemName = elemArr[0].trim();
       if (elemName === name) {
         cookieExists = true;
       }
