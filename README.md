@@ -100,10 +100,10 @@ Remove cookie by specific name.
 #### removeAll(debug?: boolean) : void
 Remove all cookies.
 
-#### empty(name: string, debug?: boolean)
+#### empty(name: string, debug?: boolean) : void
 Empty cookie value by specific name.
 
-#### exists(name: string, debug?: boolean)
+#### exists(name: string, debug?: boolean) : boolean
 Check if cookie exists.
 
 
