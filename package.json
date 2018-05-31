@@ -1,6 +1,6 @@
 {
   "name": "ng5plus-cookies",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Angular 5+ cookies service.",
   "main": "./cookies.service.ts",
   "scripts": {
