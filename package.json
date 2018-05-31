@@ -2,7 +2,7 @@
   "name": "ng5plus-cookies",
   "version": "1.0.0",
   "description": "Angular 5+ cookies service.",
-  "main": "cookies.service.ts",
+  "main": "./cookies.service.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
