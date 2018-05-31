@@ -71,7 +71,9 @@ interface CookieOptions {
 
 *secure* - [boolean] Cookie to only be transmitted over secure protocol as https.
 
-*httpOnly* - ['strict' | 'lax'] prevents the browser from sending this cookie along with cross-site requests, 'strict' for POST and GET, 'lax' only for POST
+*httpOnly* - [boolean] additional flag
+
+*sameSite* - ['strict' | 'lax'] prevents the browser from sending this cookie along with cross-site requests, 'strict' for POST and GET, 'lax' only for POST
 
 
 
