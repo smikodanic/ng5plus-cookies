@@ -1,0 +1,24 @@
+{
+  "name": "ng5plus-cookies",
+  "version": "1.0.0",
+  "description": "Angular 5+ cookies service.",
+  "main": "cookies.service.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "angular",
+    "angular4",
+    "angular",
+    "4",
+    "angular5",
+    "angular",
+    "5",
+    "angular6",
+    "angular",
+    "6",
+    "cookies"
+  ],
+  "author": "Saša Mikodanić",
+  "license": "MIT"
+}
