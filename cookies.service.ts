@@ -23,12 +23,14 @@ export class CookiesService {
   }
 
 
+
   /**
    * Show console error
    */
   private errNotAvailable() {
-    console.error('Document is not available in Ng5PlusCookiesService.');
+    console.error('Document is not available in ng5plus-cookies.');
   }
+
 
 
   /**
@@ -94,13 +96,35 @@ export class CookiesService {
 
 
   /**
+   * Get all cookies in array format.
+   * @return Array
+   */
+  private allCookiesArr() {
+
+    // fetch all cookies
+    const allCookies = document.cookie; // authAPIInit1=jedan1; authAPIInit2=dva2; authAPI=
+    
+    // create cookie array
+    let cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
+
+    // remove empty spaces from left and right side
+    const cookiesArrMapped = cookiesArr.map(function (cookiesPair: string) { // cookiePair: " authAPIInit2=dva2"
+      return cookiesPair.trim();
+    });
+
+    return cookiesArrMapped; // ["authAPIInit1=jedan1", "authAPIInit2=dva2", "authAPI="]
+  }
+
+
+
+  /**
    * Set cookie. Cookie value is string.
    * @param name - cookie name
    * @param value - cookie value (string)
    * @param cookieOpts - cookie options: domain, path, expires, secure, HttpOnly, SameSite
    * @param debug - true | false (show errors and debug info)
    */
-  put(name: string, value: string, cookieOpts?: CookieOptions, debug?: boolean) {
+  put(name: string, value: string, cookieOpts?: CookieOptions, debug?: boolean): void {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -109,17 +133,21 @@ export class CookiesService {
       return;
     }
 
+    // encoding cookie value
+    value = encodeURIComponent(value);
+
     // name=value;
     let cookieStr = name + '=' + value + ';';
 
     // add cookie options: domain, path, expires, secure, HttpOnly, SameSite
     cookieStr = this.addCookieOptions(cookieStr, cookieOpts);
 
+    // debug
+    if (debug) {
+      console.log('cookie-put():cookieStr: ', cookieStr);
+    }
 
     // put cookie
-    if (debug) {
-      console.log('cookie-put(): ', cookieStr);
-    }
     document.cookie = cookieStr;
   }
 
@@ -132,7 +160,7 @@ export class CookiesService {
    * @param cookieOpts - cookie options: domain, path, expires, secure, HttpOnly, SameSite
    * @param debug - true | false (show errors and debug info)
    */
-  putObject(name: string, value: any, cookieOpts?: CookieOptions, debug?: boolean) {
+  putObject(name: string, value: any, cookieOpts?: CookieOptions, debug?: boolean): void {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -141,7 +169,7 @@ export class CookiesService {
       return;
     }
 
-    // convert object to string
+    // convert object to string and encode that string
     const valueStr = encodeURIComponent(JSON.stringify(value));
 
     // name=value;
@@ -150,11 +178,12 @@ export class CookiesService {
     // add cookie options: domain, path, expires, secure, HttpOnly, SameSite
     cookieStr = this.addCookieOptions(cookieStr, cookieOpts);
 
-
-    // put cookie
+    // debug
     if (debug) {
       console.log('cookie-putObject(): ', cookieStr);
     }
+
+    // put cookie
     document.cookie = cookieStr;
   }
 
@@ -165,7 +194,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return string - example: cook1=jedan1; cook2=dva2;
    */
-  getAll(debug?: boolean) {
+  getAll(debug?: boolean): string {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -175,11 +204,13 @@ export class CookiesService {
     }
 
     // fetch all cookies
-    const allCookies = document.cookie;
+    const allCookies = document.cookie; // 'cook1=jedan1; cook2=dva2;'
 
+    // debug
     if (debug) {
       console.log('cookie-getAll(): ', allCookies);
     }
+
     return allCookies;
   }
 
@@ -191,7 +222,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return string
    */
-  get(name: string, debug?: boolean) {
+  get(name: string, debug?: boolean): string {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -200,21 +231,22 @@ export class CookiesService {
       return;
     }
 
-    // fetch all cookies
-    const allCookies = document.cookie; // authAPIInit1=jedan1; authAPIInit2=dva2; authAPI=
+    // get cookies array
+    const cookiesArr: string[] = this.allCookiesArr(); // ["authAPIInit1=jedan1", "authAPIInit2=dva2", "authAPI="]
 
     // extract cookie value for specific name
-    const cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
-    let elemArr, elemName, elemVal, cookieVal;
-
+    let elemArr, cookieVal;
     cookiesArr.forEach(function(elem: string) {
-      elem = elem.trim();
       elemArr = elem.split('='); // ["authAPIInit1", "jedan1"]
-      if (elemName === name) {
-        cookieVal = elemVal;
+      if (elemArr[0] === name) {
+        cookieVal = elemArr[1];
       }
     });
 
+    // decoding cookie value
+    cookieVal = decodeURIComponent(cookieVal);
+
+    // debug
     if (debug) {
       console.log('cookie-get()-cookiesArr: ', cookiesArr);
       console.log('cookie-get()-cookieVal: ', name, '=', cookieVal);
@@ -231,7 +263,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return object
    */
-  getObject(name: string, debug?: boolean) {
+  getObject(name: string, debug?: boolean): any {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -241,15 +273,24 @@ export class CookiesService {
     }
 
     let cookieVal = this.get(name, debug); // %7B%22jen%22%3A1%2C%22dva%22%3A%22dvica%22%7D
-  
+
     // convert cookie string value to object
+    let cookieObj: any = null;
     try {
-      cookieVal = JSON.parse(decodeURIComponent(cookieVal));
+      if (cookieVal !== 'undefined' && !!cookieVal) {
+        cookieObj = JSON.parse(decodeURIComponent(cookieVal));
+      }
     } catch (err) {
       console.error('cookie-getObject(): ', err);
     }
 
-    return cookieVal;
+    // debug
+    if (debug) {
+      console.log('cookie-getObject():cookieVal: ', cookieVal);
+      console.log('cookie-getObject():cookieObj: ', cookieObj);
+    }
+
+    return cookieObj;
   }
 
 
@@ -260,7 +301,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return void
    */
-  remove(name: string, debug?: boolean) {
+  remove(name: string, debug?: boolean): void {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -272,9 +313,12 @@ export class CookiesService {
     // set expires backward to delete cookie
     const dateOld = new Date('1970-01-01T01:00:00');
 
+    // debug
     if (debug) {
       console.log('cookie-remove(): ', name, ' cookie is deleted.');
     }
+
+    // cookie removal
     document.cookie = name + '=;expires=' + dateOld;
   }
 
@@ -285,7 +329,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return void
    */
-  removeAll(debug?: boolean) {
+  removeAll(debug?: boolean): void {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -297,23 +341,22 @@ export class CookiesService {
     // set expires backward to delete cookie
     const dateOld = new Date('1970-01-01T01:00:00');
 
-    // fetch all cookies
-    const allCookies = document.cookie; // authAPIInit1=jedan1; authAPIInit2=dva2; authAPI=
+    // get cookies array
+    const cookiesArr: string[] = this.allCookiesArr(); // ["authAPIInit1=jedan1", "authAPIInit2=dva2", "authAPI="]
 
     // extract cookie value for specific name
-    const cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
-    let elemArr, elemName;
+    let elemArr;
     cookiesArr.forEach(function(elem: string) {
-      elem = elem.trim();
       elemArr = elem.split('='); // ["authAPIInit1", "jedan1"]
-      document.cookie = elemName + '=;expires=' + dateOld;
+      document.cookie = elemArr[0] + '=;expires=' + dateOld;
     });
 
-
+    // debug
     if (debug) {
       console.log('cookie-removeAll(): ', cookiesArr);
     }
   }
+
 
 
   /**
@@ -322,7 +365,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return void
    */
-  empty(name: string, debug?: boolean) {
+  empty(name: string, debug?: boolean): void {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -331,12 +374,15 @@ export class CookiesService {
       return;
     }
 
+    // empty cookie value
+    document.cookie = name + '=;';
 
+    // debug
     if (debug) {
       console.log('cookie-empty(): ', name);
     }
-    document.cookie = name + '=;';
   }
+
 
 
   /**
@@ -345,7 +391,7 @@ export class CookiesService {
    * @param debug - true | false (show errors and debug info)
    * @return boolean
    */
-  exists(name: string, debug?: boolean) {
+  exists(name: string, debug?: boolean): boolean {
 
     if (!this.doc_avail) {
       if (debug) {
@@ -354,23 +400,23 @@ export class CookiesService {
       return;
     }
 
-    // fetch all cookies
-    const allCookies = document.cookie; // authAPIInit1=jedan1; authAPIInit2=dva2; authAPI=
+    // get cookies array
+    const cookiesArr: string[] = this.allCookiesArr(); // ["authAPIInit1=jedan1", "authAPIInit2=dva2", "authAPI="]
 
     // extract cookie value for specific name
-    const cookiesArr: string[] = allCookies.split(';'); // ["authAPIInit1=jedan1", " authAPIInit2=dva2", " authAPI="]
-    let elemArr, elemName, cookieExists = false;
+    let elemArr, cookieExists = false;
     cookiesArr.forEach(function(elem: string) {
-      elem = elem.trim();
       elemArr = elem.split('='); // ["authAPIInit1", "jedan1"]
-      if (elemName === name) {
+      if (elemArr[0] === name) {
         cookieExists = true;
       }
     });
 
+    // debug
     if (debug) {
       console.log('cookie-exists(): ', cookieExists);
     }
+
     return cookieExists;
   }
 

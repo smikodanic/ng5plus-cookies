@@ -11,6 +11,9 @@ $ npm install --save ng5plus-cookies
 
 ```
 
+### Dependencies
+This is standalone library which doesn't require any extrenal dependencies.
+
 
 ## Integration & Implementation
 ```javascript
